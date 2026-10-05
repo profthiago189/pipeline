@@ -6,6 +6,8 @@ didáticos no laboratório de SonarQube. Não utilizar como referência
 de boas práticas.
 """
 
+import os
+
 # Modo debug ativo — nunca deve ir para produção
 DEBUG = True
 

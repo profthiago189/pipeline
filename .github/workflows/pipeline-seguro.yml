@@ -237,7 +237,7 @@ jobs:
         with:
           name: relatorio-trivy-imagem
           path: trivy-image-results.sarif
- 
+
       # ---------------------------------------------------------
       # 4. Gate de segurança
       # ---------------------------------------------------------

@@ -127,7 +127,7 @@ jobs:
         run: pip install -r requirements.txt
 
       # ---------------------------------------------------------
-      # 1. Gera o SARIF (auditoria)
+      # 4.1. Gera o SARIF (auditoria)
       # ---------------------------------------------------------
       - name: Gerar relatorio SARIF
         uses: aquasecurity/trivy-action@v0.36.0
@@ -140,7 +140,7 @@ jobs:
           exit-code: '0'
 
       # ---------------------------------------------------------
-      # 2. Publica no GitHub Security > Code Scanning
+      # 4.2. Publica no GitHub Security > Code Scanning
       # ---------------------------------------------------------
       - name: Upload SARIF para Security
         if: always()
@@ -149,7 +149,7 @@ jobs:
           sarif_file: trivy-fs-results.sarif
 
       # ---------------------------------------------------------
-      # 3. Guarda o SARIF como artefato de auditoria
+      # 4.3. Guarda o SARIF como artefato de auditoria
       # ---------------------------------------------------------
       - name: Publicar artefato do Trivy
         if: always()
@@ -159,7 +159,7 @@ jobs:
           path: trivy-fs-results.sarif
 
       # ---------------------------------------------------------
-      # 4. Gate de seguranca
+      # 4.4. Gate de seguranca
       # Bloqueia apenas HIGH e CRITICAL
       # ---------------------------------------------------------
       - name: Gate Trivy (HIGH/CRITICAL)
@@ -216,18 +216,38 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
-          format: 'table'
+          format: 'sarif'
           output: 'trivy-image-results.sarif'
-
+          exit-code: '0'
+      # ---------------------------------------------------------
+      # 2. Upload para GitHub Security
+      # ---------------------------------------------------------
+      - name: Upload SARIF para Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-image-results.sarif
+ 
+      # ---------------------------------------------------------
+      # 3. Guardar evidência para auditoria
+      # ---------------------------------------------------------
       - name: Publicar relatorio da imagem
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: relatorio-trivy-imagem
           path: trivy-image-results.sarif
-          if-no-files-found: ignore
+ 
+      # ---------------------------------------------------------
+      # 4. Gate de segurança
+      # ---------------------------------------------------------
+      - name: Gate Trivy da imagem
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
+          severity: 'HIGH,CRITICAL'
+          format: 'table'
+          exit-code: '1'
 
   # ============================================================
   # ESTACAO 7 - DEPLOY EM HOMOLOGACAO + DAST (OWASP ZAP)

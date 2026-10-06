@@ -219,6 +219,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           exit-code: '0'
+
       # ---------------------------------------------------------
       # 2. Upload para GitHub Security
       # ---------------------------------------------------------
@@ -226,8 +227,7 @@ jobs:
 #       if: always()
  #      uses: github/codeql-action/upload-sarif@v4
   #     with:
-   #      sarif_file: trivy-image-results.sarif
- 
+   #      sarif_file: trivy-image-results.sarif 
       # ---------------------------------------------------------
       # 3. Guardar evidência para auditoria
       # ---------------------------------------------------------

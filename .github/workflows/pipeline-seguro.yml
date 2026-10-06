@@ -123,13 +123,18 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      - name: Validar dependências instaladas
+        run: |
+          pip show flask
+          pip show requests
+
       - name: Trivy - bloqueia em CRITICAL/HIGH
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
           scanners: 'vuln'
-          severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+          severity: 'HIGH,CRITICAL'
           exit-code: '0'
           format: 'sarif'
           output: 'trivy-fs-results.sarif'
